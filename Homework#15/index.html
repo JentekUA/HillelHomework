@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #15</title>
+  </head>
+  <body>
+    <script>
+      function findPalindrome(number, acc = {}) {
+        const sign = Math.sign(number);
+        const reversedNumber =
+          +Math.abs(number).toString().split("").reverse().join("") * sign;
+
+        acc.steps = acc.steps === undefined ? 0 : ++acc.steps;
+
+        if (number === reversedNumber) {
+          acc.result = number;
+
+          return acc;
+        } else {
+          return findPalindrome(number + reversedNumber, acc);
+        }
+      }
+    </script>
+  </body>
+</html>
