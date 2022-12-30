@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #11</title>
+  </head>
+  <body>
+    <script>
+      function addCache(func, memo) {
+        return function () {
+          const args = Array.from(arguments);
+          const argsString = args.join(",");
+
+          if (argsString in memo) {
+            //Returning from memo
+            return memo[argsString];
+          } else {
+            //Calculating and saving to memo
+            memo[argsString] = func.apply(this, args);
+            return memo[argsString];
+          }
+        };
+      }
+    </script>
+  </body>
+</html>

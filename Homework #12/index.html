@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #12</title>
+  </head>
+  <body>
+    <script>
+      function groupMessages(messages) {
+        return messages
+          .sort((curr, next) => {
+            const [currDay, currMonth, currYear] = curr.date.split("/");
+            const [nextDay, nextMonth, nextYear] = next.date.split("/");
+
+            const currDate = new Date(+currYear, +currMonth, +currDay);
+            const nextDate = new Date(+nextYear, +nextMonth, +nextDay);
+
+            if (currDate > nextDate) return -1;
+            else return 1;
+          })
+          .reduce((output, msg) => {
+            if (!output[msg.date]) {
+              output[msg.date] = {};
+            }
+
+            if (!output[msg.date][msg.source]) {
+              output[msg.date][msg.source] = [];
+            }
+
+            output[msg.date][msg.source].push(msg);
+
+            return output;
+          }, {});
+      }
+    </script>
+  </body>
+</html>

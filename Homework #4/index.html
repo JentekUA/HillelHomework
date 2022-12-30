@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #4</title>
+  </head>
+  <body>
+    <script>
+      var hight;
+      do {
+        hight = +prompt("Enter the hight of xmas tree as a number.");
+      } while (hight !== hight || hight <= 0);
+
+      var resultString = "";
+      var layerWidth = 1;
+
+      for (var layerIndex = 0; layerIndex < hight; layerIndex++) {
+        var spacesCount = hight - layerWidth / 2;
+
+        for (var spaceIndex = 0; spaceIndex < spacesCount; spaceIndex++) {
+          resultString += " ";
+        }
+
+        for (var widthIndex = 0; widthIndex < layerWidth; widthIndex++) {
+          resultString += "*";
+        }
+
+        resultString += "\n";
+        layerWidth += 2;
+      }
+
+      alert(resultString);
+    </script>
+  </body>
+</html>

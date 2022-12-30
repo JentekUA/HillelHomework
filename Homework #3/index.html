@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework №3</title>
+  </head>
+  <body>
+    <script>
+      /*
+      В условиях к домашке ничего не сказано про отрицательные числа.
+      Но сказано что ограничений по возрасту нет.
+      Math.abs() мы ещё не проходили, поэтому все условия продублированны для отрицательных чисел.
+
+      RegEx так же небыл использован для проверки того, что пользователь ввёл число, потому что мы его не проходили.
+      */
+
+      var age = prompt("Введите свой возраст числом.") || null;
+      if ((+age || +age === 0) && age !== null) {
+        var lastDigit = +age[age.length - 1];
+        var beforeLastDigit = age.length > 1 ? +age[age.length - 2] : 0;
+
+        if ((lastDigit === 1 || lastDigit === -1) && beforeLastDigit !== 1) {
+          alert(`Вам ${age} год.`);
+        } else if (((lastDigit > 1 && lastDigit < 5) || (lastDigit < -1 && lastDigit > -5)) && beforeLastDigit !== 1) {
+          alert(`Вам ${age} года.`);
+        } else {
+          alert(`Вам ${age} лет.`);
+        }
+      } else {
+        alert(`${age} не число.`);
+      }
+    </script>
+  </body>
+</html>
