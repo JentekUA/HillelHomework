@@ -9,19 +9,22 @@
   <body>
     <script>
       function findPalindrome(number, acc = {}) {
-        const sign = Math.sign(number);
-        const reversedNumber =
-          +Math.abs(number).toString().split("").reverse().join("") * sign;
+        function recursiveFunc(number, acc) {
+          const sign = Math.sign(number);
+          const reversedNumber =
+            +Math.abs(number).toString().split("").reverse().join("") * sign;
 
-        acc.steps = acc.steps === undefined ? 0 : ++acc.steps;
+          acc.steps = acc.steps === undefined ? 0 : ++acc.steps;
 
-        if (number === reversedNumber) {
-          acc.result = number;
+          if (number === reversedNumber) {
+            acc.result = number;
 
-          return acc;
-        } else {
-          return findPalindrome(number + reversedNumber, acc);
+            return acc;
+          }
+          return recursiveFunc(number + reversedNumber, acc);
         }
+
+        return recursiveFunc(number, acc);
       }
     </script>
   </body>
