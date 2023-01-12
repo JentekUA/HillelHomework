@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #16</title>
+  </head>
+  <body>
+    <script>
+      const films = [
+        {
+          name: "Back to the Future",
+          year: 1985,
+          genre: [
+            "Comic",
+            "Sci-fy",
+            "Romance",
+            "Children's film",
+            "Adventures",
+            "Fantastic movie",
+          ],
+        },
+        {
+          name: "Green mile",
+          year: 1999,
+          genre: ["Drama", "Detective", "Crime", "Fantastic movie"],
+        },
+        {
+          name: "Titanic",
+          year: 1997,
+          genre: ["Romance", "Catastrophe", "Drama", "Historical movie"],
+        },
+      ];
+
+      function groupByProperty(list, property) {
+        const map = list.reduce((map, item) => {
+          item[property].forEach(element => {
+            if (!map[element]) {
+              map[element] = [];
+            }
+
+            map[element].push(item);
+          });
+
+          return map;
+        }, {});
+
+        map[Symbol.iterator] = function () {
+          const items = Object.values(this);
+          items.reduce((uniqueItems, item) => {
+            if (
+              !uniqueItems.find(element => {
+                return element.name === item.name;
+              })
+            ){
+                uniqueItems.push(item);
+            }
+              
+
+            return uniqueItems;
+          }, []);
+          const index = 0;
+
+          return {
+            next() {
+              if (index === items.length) {
+                return {
+                  done: true,
+                };
+              }
+              return items[index + 1];
+            },
+          };
+        };
+
+        return map;
+      }
+
+      console.log(groupByProperty(films, "genre"));
+
+      for (film of films) {
+        console.log(film);
+      }
+    </script>
+  </body>
+</html>
