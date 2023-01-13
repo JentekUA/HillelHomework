@@ -47,29 +47,16 @@
         }, {});
 
         map[Symbol.iterator] = function () {
-          const items = Object.values(this);
-          items.reduce((uniqueItems, item) => {
-            if (
-              !uniqueItems.find(element => {
-                return element.name === item.name;
-              })
-            ){
-                uniqueItems.push(item);
-            }
-              
-
-            return uniqueItems;
-          }, []);
-          const index = 0;
+          const items = [
+            ...new Set(Object.values(this).flatMap(x => x)).values(),
+          ];
+          let index = 0;
 
           return {
             next() {
-              if (index === items.length) {
-                return {
-                  done: true,
-                };
-              }
-              return items[index + 1];
+              return index >= items.length
+                ? { done: true }
+                : { value: items[index++] };
             },
           };
         };
@@ -77,9 +64,11 @@
         return map;
       }
 
-      console.log(groupByProperty(films, "genre"));
+      const groupedFilms = groupByProperty(films, "genre");
 
-      for (film of films) {
+      console.log(groupedFilms);
+
+      for (film of groupedFilms) {
         console.log(film);
       }
     </script>
