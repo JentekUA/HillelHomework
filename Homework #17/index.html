@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #17</title>
+  </head>
+  <body>
+    <script>
+      "use strict";
+
+      function Student(firstName, lastName, bday) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.bday = bday;
+        this.attendance = new Array(10).fill(null);
+        this.marks = new Array(10).fill(null);
+
+        Object.seal(this.attendance);
+        Object.seal(this.marks);
+      }
+
+      Student.prototype.getAge = function () {
+        return new Date().getFullYear() - this.bday;
+      };
+
+      Student.prototype.getAverageMark = function () {
+        return this.marks.reduce((sum, next) => sum + next, 0) / this.marks.length;
+      };
+
+      Student.prototype.mark = function (mark) {
+        if (!Number.isFinite(mark) || mark < 0 || mark > 10) return;
+
+        const lastEmptyEl = this.marks.indexOf(null);
+        if (lastEmptyEl !== -1) this.marks[lastEmptyEl] = mark;
+      };
+
+      Student.prototype.absent = function () {
+        const lastEmptyEl = this.attendance.indexOf(null);
+        if (lastEmptyEl !== -1) this.attendance[lastEmptyEl] = false;
+      };
+
+      Student.prototype.present = function () {
+        const lastEmptyEl = this.attendance.indexOf(null);
+        if (lastEmptyEl !== -1) this.attendance[lastEmptyEl] = true;
+      };
+
+      Student.prototype.summary = function () {
+        const averageMark = this.getAverageMark();
+        const averageAttendance = this.attendance.reduce((sum, next) => sum + next, 0) / this.attendance.length;
+
+        if (averageAttendance > 0.9 && averageMark > 9) return "Ути какой молодчинка!";
+        else if (averageAttendance < 0.9 && averageMark < 9) return "Редиска!";
+        else return "Норм, но можно лучше";
+      };
+
+      // Создаём экземпляры и дёргаем методы
+      function rundomStudent() {
+        const student = new Student("Oleksandr", "Aleksashyn", 1999);
+        console.log(student);
+
+        //Check getAge
+        console.log("Age:", student.getAge());
+
+        //Populate marks, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.mark(Math.round(Math.random() * 10));
+        }
+        console.log("Average mark:", student.getAverageMark());
+
+        //Populate attendance, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          Math.round(Math.random()) === 0 ? student.absent() : student.present();
+        }
+
+        //Check summary
+        console.log(student.summary());
+      }
+
+      function goodStudent() {
+        const student = new Student("Oleksandr", "Aleksashyn", 1999);
+        console.log(student);
+
+        //Check getAge
+        console.log("Age:", student.getAge());
+
+        //Populate marks, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.mark(10);
+        }
+        console.log("Average mark:", student.getAverageMark());
+
+        //Populate attendance, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.present();
+        }
+
+        //Check summary
+        console.log(student.summary());
+      }
+
+      function averageStudent() {
+        const student = new Student("Oleksandr", "Aleksashyn", 1999);
+        console.log(student);
+
+        //Check getAge
+        console.log("Age:", student.getAge());
+
+        //Populate marks, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.mark(9);
+        }
+        console.log("Average mark:", student.getAverageMark());
+
+        //Populate attendance, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.absent();
+        }
+
+        //Check summary
+        console.log(student.summary());
+      }
+
+      function badStudent() {
+        const student = new Student("Oleksandr", "Aleksashyn", 1999);
+        console.log(student);
+
+        //Check getAge
+        console.log("Age:", student.getAge());
+
+        //Populate marks, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.mark(0);
+        }
+        console.log("Average mark:", student.getAverageMark());
+
+        //Populate attendance, check that array cannot expand > 10 elemnets
+        for (let index = 0; index <= 10; index++) {
+          student.absent();
+        }
+
+        //Check summary
+        console.log(student.summary());
+      }
+    </script>
+  </body>
+</html>
