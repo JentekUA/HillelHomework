@@ -37,31 +37,31 @@
           return this.tasks.map(task => task.name);
         }
 
-        addTask(name, text, isFinished = false) {
-          const names = getNotesNames();
+        addTask(name, text, isFinished = false, confirmFunction = () => true, ...confirmArgs) {
+          const names = this.getNotesNames();
 
-          if (!names.includes(name)) {
+          if (!names.includes(name) && confirmFunction(confirmArgs)) {
             this.tasks.push(new Note(name, text, isFinished));
           }
         }
 
-        removeTask(start, taskCount) {
+        removeTask(start, taskCount, confirmFunction = () => true, ...confirmArgs) {
           if (start >= this.tasks.length || index < 0) {
             throw new RangeError(`Index ${start} is outside of tasks list.`);
           }
 
-          this.tasks.splice(start, (taskCount = 1));
+          if (confirmFunction(confirmArgs)) this.tasks.splice(start, (taskCount = 1));
         }
 
-        editTask(index, name, text) {
+        editTask(index, name, text, confirmFunction = () => true, ...confirmArgs) {
           if (index >= this.tasks.length || index < 0) {
             throw new RangeError(`Index ${index} is outside of tasks list.`);
           }
 
           const editedTask = this.tasks[index];
-          const names = getNotesNames();
+          const names = this.getNotesNames();
 
-          if (names.includes(name) && editTask.name !== name) {
+          if (names.includes(name) && editTask.name !== name && confirmFunction(confirmArgs)) {
             throw new Error(`Note with name ${name} already in the list.`);
           }
 
@@ -82,10 +82,10 @@
           return {
             totalTasks: this.tasks.length,
             finishedTasks: this.tasks.filter(task => {
-              return task.status;
+              return task.isFinished;
             }).length,
             unfinishedTasks: this.tasks.filter(task => {
-              return !task.status;
+              return !task.isFinished;
             }).length,
           };
         }
