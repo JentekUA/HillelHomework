@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #20</title>
+  </head>
+  <body>
+    <script>
+      "use strict";
+
+      const promiseProto = Promise.prototype;
+      promiseProto.constructor.customAllSettled = function (promises) {
+        return new Promise((res, err) => {
+          const promiseResults = [];
+
+          promises.forEach((promise, index, arr) => {
+            Promise.resolve(promise)
+              .then(value => {
+                promiseResults[index] = {
+                  status: "fulfilled",
+                  value: value,
+                };
+              })
+              .catch(reason => {
+                promiseResults[index] = {
+                  status: "rejected",
+                  value: reason,
+                };
+              })
+              .finally(() => {
+                if (index === arr.length - 1) res(promiseResults);
+              });
+          });
+        });
+      };
+
+      //Creating test promises array
+      const testData = [];
+      for (let index = 0; index < 5; index++) {
+        testData.push(
+          new Promise((res, err) => {
+            const outcome = Math.round(Math.random()) !== 0 ? res : err;
+
+            return setTimeout(outcome, Math.round(Math.random() * 1000), index);
+          })
+        );
+      }
+
+      //Test call
+      Promise.customAllSettled(testData).then(console.log);
+
+      //Test call whith non promises
+      Promise.customAllSettled([1, 2, 3, 4, 5]).then(console.log);
+    </script>
+  </body>
+</html>
