@@ -26,11 +26,13 @@
               .catch(reason => {
                 promiseResults[index] = {
                   status: "rejected",
-                  value: reason,
+                  reason: reason,
                 };
               })
               .finally(() => {
-                if (index === arr.length - 1) res(promiseResults);
+                if (promiseResults.length === arr.length && !promiseResults.includes(undefined)) {
+                  res(promiseResults);
+                }
               });
           });
         });
