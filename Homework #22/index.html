@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #22</title>
+  </head>
+  <body>
+    <script>
+      "use strict";
+
+      class Swapi {
+        baseUrl = "https://www.swapi.tech/api";
+        starShipsEndpoint = "/starships/";
+        filmsEndpoint = "/films/";
+        peopleEndpoint = "/people/";
+        starShips = [];
+        films = [];
+        people = [];
+
+        async getShipFilmsAndCrew(shipName) {
+          if (this.starShips.length === 0) {
+            this.starShips = await this.getShips();
+          }
+
+          const returnObj = { name: shipName, films: [], pilots: [] };
+          const shipObj = this.starShips.find(ship => ship.name === shipName);
+
+          if (!shipObj) {
+            return returnObj;
+          }
+
+          if (this.films.length === 0) {
+            this.films = await this.getFilms();
+          }
+
+          const pilotLinks = await fetch(shipObj.url)
+            .then(res => res.json())
+            .then(res => res.result.properties.pilots || []);
+
+          for (let link of pilotLinks) {
+            const person = this.people.find(person => person.properties.url === link);
+
+            if (!person) {
+              await fetch(link)
+                .then(res => res.json())
+                .then(res => {
+                  this.people.push(res.result);
+                  returnObj.pilots.push(res.result.properties.name);
+                });
+            } else {
+              returnObj.pilots.push(person);
+            }
+          }
+
+          this.films.forEach(film => {
+            if (film.properties.starships.includes(shipObj.url)) {
+              returnObj.films.push(film.properties.title);
+            }
+          });
+
+          return returnObj;
+        }
+
+        async getShips() {
+          return await fetchNextPage(this.baseUrl + this.starShipsEndpoint);
+
+          async function fetchNextPage(url, ships = []) {
+            const response = await fetch(url).then(res => res.json());
+            if (!response.next) {
+              return await ships.concat(response.results);
+            } else {
+              return await fetchNextPage(response.next, ships.concat(response.results));
+            }
+          }
+        }
+
+        async getFilms() {
+          const films = await fetch(this.baseUrl + this.filmsEndpoint)
+            .then(res => res.json())
+            .then(res => res.result);
+
+          return films;
+        }
+      }
+
+      const swapi = new Swapi();
+      swapi.getShipFilmsAndCrew("Millennium Falcon").then(console.log);
+    </script>
+  </body>
+</html>
