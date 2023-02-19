@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #23</title>
+  </head>
+  <body>
+    <script>
+      "use strict";
+
+      class ToDoList {
+        notes = {};
+        storage = new LocalStorage();
+        api = new API();
+
+        constructor() {
+          const storedToken = this.storage.get("access_token");
+          if (!storedToken) {
+            this.api.authenticate().then(res => {
+              this.storage.set("access_token", res.access_token);
+              this.api.setToken(res.access_token);
+            });
+          } else {
+            this.api.setToken(storedToken);
+          }
+
+          this.api.getNotes().then(res => {
+            this.notes = res.map(item => new Note(item._id, item.value, item.priority, item.checked));
+          });
+        }
+
+        addNote(text, priority = 1, confirm = true) {
+          if (confirm) {
+            this.api.createNote(text, priority).then(res => {
+              this.notes.push(new Note(res._id, res.value, priority, res.checked));
+            });
+          }
+        }
+
+        removeNotes(start, noteCount = 1, confirm = true) {
+          if (start >= this.notes.length || start < 0) {
+            throw new RangeError(`Index ${start} is outside of notes list.`);
+          }
+
+          if (confirm) {
+            for (let index = start; index < start + noteCount; index++) {
+              const noteToDelete = this.notes[index];
+              this.api.deleteNote(noteToDelete.id);
+            }
+            this.notes.splice(start, noteCount);
+          }
+        }
+
+        editNote(index, value, priority, confirm = true) {
+          if (index >= this.notes.length || index < 0) {
+            throw new RangeError(`Index ${index} is outside of notes list.`);
+          }
+
+          if (confirm) {
+            const editedNote = this.notes[index];
+            this.api.editNote(editedNote.id, value, priority);
+            editedNote.editValue(value);
+            editedNote.editPriority(priority);
+          }
+        }
+
+        toggleNoteStatus(index, confirm = true) {
+          if (index >= this.notes.length || index < 0) {
+            throw new RangeError(`Index ${index} is outside of notes list.`);
+          }
+
+          const editedNote = this.notes[index];
+          if (confirm) {
+            this.api.toggleNote(editedNote.id);
+            editedNote.changeStatus();
+          }
+        }
+
+        getStatistic() {
+          return {
+            totalTasks: this.notes.length,
+            finishedTasks: this.notes.filter(note => {
+              return note.isFinished;
+            }).length,
+            unfinishedTasks: this.notes.filter(note => {
+              return !note.isFinished;
+            }).length,
+          };
+        }
+      }
+
+      class API {
+        access_token;
+
+        setToken(token) {
+          this.access_token = token;
+        }
+
+        async authenticate() {
+          const response = await fetch("https://todo.hillel.it/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ value: "Oleksandr Aleksashyn" }),
+          });
+
+          return await response.json();
+        }
+
+        async getNotes() {
+          const response = await fetch("https://todo.hillel.it/todo", {
+            headers: {
+              "Content-Type": "application/json;charset=utf-8",
+              "Authorization": `Bearer ${this.access_token}`,
+            },
+          });
+
+          return await response.json();
+        }
+
+        async getNote(id) {
+          const response = await fetch(`https://todo.hillel.it/todo/${id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${this.access_token}`,
+            },
+          });
+
+          return await response.json();
+        }
+
+        async createNote(value, priority) {
+          const response = await fetch("https://todo.hillel.it/todo", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${this.access_token}`,
+            },
+            body: JSON.stringify({ value, priority }),
+          });
+
+          return await response.json();
+        }
+
+        async editNote(id, value, priority) {
+          const response = await fetch(`https://todo.hillel.it/todo/${id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${this.access_token}`,
+            },
+            body: JSON.stringify({ value, priority }),
+          });
+
+          return await response.json();
+        }
+
+        async toggleNote(id) {
+          const response = await fetch(`https://todo.hillel.it/todo/${id}/toggle`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${this.access_token}`,
+            },
+          });
+
+          return await response.json();
+        }
+
+        async deleteNote(id) {
+          const response = await fetch(`https://todo.hillel.it/todo/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${this.access_token}`,
+            },
+          });
+
+          return await response.json();
+        }
+      }
+
+      class Storage {
+        get(key) {
+          throw new Error("Base class method needs to be overwritten");
+        }
+        set(key, value) {
+          throw new Error("Base class method needs to be overwritten");
+        }
+      }
+
+      class LocalStorage extends Storage {
+        get(key) {
+          return window.localStorage.getItem(key);
+        }
+
+        set(key, value) {
+          window.localStorage.setItem(key, value);
+        }
+      }
+
+      class Note {
+        constructor(id, value, priority, isFinished = false) {
+          this.id = id;
+          this.value = value;
+          this.priority = priority;
+          this.isFinished = isFinished;
+        }
+
+        editValue(newText) {
+          this.value = newText;
+        }
+
+        editPriority(priority) {
+          this.priority = priority;
+        }
+
+        changeStatus() {
+          this.isFinished = !this.isFinished;
+        }
+      }
+
+      const todo = new ToDoList();
+    </script>
+  </body>
+</html>
