@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #24</title>
+  </head>
+  <body>
+    <script>
+      "use strict";
+
+      const script = document.querySelector("script");
+      const fragment = generateCalculatorInterface();
+      script.before(fragment);
+
+      function generateCalculatorInterface() {
+        const fragment = new DocumentFragment();
+        generateInputs(fragment);
+
+        const calculatorTable = document.createElement("table");
+        generateDigitKeys(calculatorTable);
+        generateAdditionalKeys(calculatorTable);
+        generateOperationButtons(calculatorTable);
+        fragment.append(calculatorTable);
+
+        return fragment;
+
+        function generateInputs(table) {
+          ["query", "current_number"].forEach(input => {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+
+            const inputEl = document.createElement("input");
+            inputEl.setAttribute("id", `${input}`);
+
+            cell.append(inputEl);
+            row.append(cell);
+            table.append(row);
+          });
+        }
+
+        function generateDigitKeys(table) {
+          let currentRow = document.createElement("tr");
+          let rowCounter = 0;
+          currentRow.setAttribute("id", `row_${++rowCounter}`);
+          table.append(currentRow);
+
+          for (let i = 0; i <= 9; i++) {
+            const cell = document.createElement("td");
+            const btn = document.createElement("button");
+
+            if (i === 0) {
+              btn.textContent = i;
+              btn.setAttribute("id", `btn_${i}`);
+
+              cell.append(btn);
+              currentRow.append(cell);
+
+              currentRow = document.createElement("tr");
+              currentRow.setAttribute("id", `row_${++rowCounter}`);
+              table.prepend(currentRow);
+            } else if (i % 3 === 0 && i !== 9) {
+              btn.textContent = i;
+              btn.setAttribute("id", `btn_${i}`);
+
+              cell.append(btn);
+              currentRow.append(cell);
+
+              currentRow = document.createElement("tr");
+              currentRow.setAttribute("id", `row_${++rowCounter}`);
+              table.prepend(currentRow);
+            } else {
+              btn.textContent = i;
+              btn.setAttribute("id", `btn_${i}`);
+
+              cell.append(btn);
+
+              currentRow.append(cell);
+            }
+          }
+        }
+
+        function generateAdditionalKeys(table) {
+          const row = table.querySelector("#row_1");
+
+          const doubleZeroCell = document.createElement("td");
+          const doubleZeroBtn = document.createElement("button");
+
+          doubleZeroBtn.setAttribute("id", "btn_00");
+          doubleZeroBtn.textContent = "00";
+
+          doubleZeroCell.append(doubleZeroBtn);
+          row.append(doubleZeroCell);
+
+          const periodCell = document.createElement("td");
+          const periodBtn = document.createElement("button");
+
+          periodBtn.setAttribute("id", "btn_period");
+          periodBtn.textContent = ".";
+
+          periodCell.append(periodBtn);
+          row.append(periodCell);
+        }
+
+        function generateOperationButtons(table) {
+          const operations = ["+", "-", "*", "/"];
+
+          operations.forEach((operation, index) => {
+            const row = table.querySelector(`#row_${index + 1}`);
+
+            const cell = document.createElement("td");
+            const btn = document.createElement("button");
+
+            btn.setAttribute("id", `btn_${operation}`);
+            btn.textContent = operation;
+
+            cell.append(btn);
+            row.append(cell);
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
