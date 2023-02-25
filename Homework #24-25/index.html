@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homework #24-25</title>
+  </head>
+  <body>
+    <script>
+      "use strict";
+
+      const calculatorStructure = {
+        type: "div",
+        id: "calculator",
+        children: [
+          {
+            type: "tr",
+            children: [
+              {
+                type: "input",
+                id: "query",
+                value: "0",
+              },
+            ],
+          },
+          {
+            type: "tr",
+            children: [
+              {
+                type: "input",
+                id: "current_number",
+              },
+            ],
+          },
+          {
+            type: "tr",
+            children: [
+              {
+                type: "button",
+                id: "btn_clear",
+                text: "C",
+              },
+            ],
+          },
+          {
+            type: "table",
+            id: "buttons",
+            children: [
+              {
+                type: "tr",
+                id: "row_1",
+                children: [
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_7",
+                        text: "7",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_8",
+                        text: "8",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_9",
+                        text: "9",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_plus",
+                        text: "+",
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "tr",
+                id: "row_2",
+                children: [
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_4",
+                        text: "4",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_5",
+                        text: "5",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_6",
+                        text: "6",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_minus",
+                        text: "-",
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "tr",
+                id: "row_3",
+                children: [
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_1",
+                        text: "1",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_2",
+                        text: "2",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_3",
+                        text: "3",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_multiply",
+                        text: "*",
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "tr",
+                id: "row_4",
+                children: [
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_0",
+                        text: "0",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_00",
+                        text: "00",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_period",
+                        text: ".",
+                      },
+                    ],
+                  },
+                  {
+                    type: "td",
+                    children: [
+                      {
+                        type: "button",
+                        id: "btn_division",
+                        text: "/",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const script = document.querySelector("script");
+      const fragment = generateCalculatorInterface(calculatorStructure);
+      script.before(fragment);
+
+      function generateCalculatorInterface(structure) {
+        const fragment = new DocumentFragment();
+        fragment.append(generateElement(structure));
+
+        function generateElement(elementObj) {
+          const element = document.createElement(elementObj.type);
+
+          if (elementObj.id) element.setAttribute("id", elementObj.id);
+          if (elementObj.text) element.textContent = elementObj.text;
+          if (elementObj.value) element.value = elementObj.value;
+
+          if (elementObj.children) {
+            elementObj.children.forEach(child => {
+              const childEl = generateElement(child);
+              element.append(childEl);
+            });
+          }
+
+          if (elementObj.id === "buttons") {
+            element.addEventListener("click", e => {
+              e.preventDefault();
+              const target = e.target;
+
+              const query = document.querySelector("#query");
+              const currentNumber = document.querySelector("#current_number");
+
+              if (target.nodeName === "BUTTON") {
+                let calculated = 0;
+
+                switch (target.id) {
+                  case "btn_plus":
+                    displayCalculatedValue(Number(query.value) + Number(currentNumber.value));
+                    break;
+                  case "btn_minus":
+                    displayCalculatedValue(Number(query.value) - Number(currentNumber.value));
+                    break;
+                  case "btn_multiply":
+                    displayCalculatedValue(Number(query.value) * Number(currentNumber.value));
+                    break;
+                  case "btn_division":
+                    displayCalculatedValue(Number(query.value) / Number(currentNumber.value));
+                    break;
+                  case "btn_clear":
+                    query.value = "0";
+                    break;
+                  default:
+                    currentNumber.value += target.textContent;
+                }
+
+                function displayCalculatedValue(value) {
+                  if (Number.isFinite(value)) query.value = value;
+                  else query.value = "0";
+                  currentNumber.value = "";
+                }
+              }
+            });
+          }
+
+          return element;
+        }
+
+        return fragment;
+      }
+    </script>
+  </body>
+</html>
